@@ -17,12 +17,14 @@ namespace luval.excel.consolidator
                 using (var consolidatedSheet = consolidatedPackage.Workbook.Worksheets.Add("CONSOLIDATED"))
                 {
                     var consolidatedRow = options.DataStartRow + 1;
-                    for (int i = 0; i < fileNames.Length; i++)
+                    for (int fileIdx = 0; fileIdx < fileNames.Length; fileIdx++)
                     {
-                        using (var excelFilePackage = new ExcelPackage(fileNames[i]))
+                        using (var excelFilePackage = new ExcelPackage(fileNames[fileIdx]))
                         {
                             using (var excelSheet = excelFilePackage.Workbook.Worksheets[1])
                             {
+                                if (fileIdx <= 0)
+                                    CopyHeader(options, consolidatedSheet, excelSheet);
                                 var eofCriteria = false;
                                 var emptyRowCount = 1;
                                 var excelRow = options.DataStartRow;
