@@ -10,6 +10,14 @@ namespace luval.excel.consolidator
 {
     public class Consolidator
     {
+        public event EventHandler<ConsolidatorEventArgs> Status;
+
+        protected virtual void OnStatus(ConsolidatorEventArgs e)
+        {
+            EventHandler<ConsolidatorEventArgs> handler = Status;
+            handler?.Invoke(this, e);
+        }
+
         public void Execute(Options options, FileInfo outputFile, FileInfo[] fileNames)
         {
             using (var consolidatedPackage = new ExcelPackage(outputFile))
@@ -25,10 +33,12 @@ namespace luval.excel.consolidator
                             {
                                 if (fileIdx <= 0)
                                     CopyHeader(options, consolidatedSheet, excelSheet);
+
                                 var eofCriteria = false;
                                 var emptyRowCount = 1;
                                 var excelRow = options.DataStartRow;
-                                while(!eofCriteria)
+                                var rowCount = 1;
+                                while (!eofCriteria)
                                 {
                                     var isNull = IsNull(excelSheet.Cells[excelRow, options.DataStartColumn].Value);
                                     if (!isNull)
@@ -40,6 +50,7 @@ namespace luval.excel.consolidator
                                         }
                                         consolidatedRow++;
                                         excelRow++;
+                                        rowCount++;
                                     }
                                     else
                                     {
@@ -47,9 +58,17 @@ namespace luval.excel.consolidator
                                         eofCriteria = emptyRowCount > 4 && isNull;
                                     }
                                 }
+                                var progress = Math.Round(((double)fileIdx / (double)fileNames.Length) * 100, 2);
+                                OnStatus(new ConsolidatorEventArgs()
+                                {
+                                    Progress = progress,
+                                    Message = string.Format("File: {0} Rows: {1} Progress:{2}",
+                                        fileNames[fileIdx].Name.PadRight(55), rowCount.ToString().PadLeft(5), progress.ToString().PadLeft(7))
+                                });
                             }
                         }
                     }
+                    consolidatedPackage.Save();
                 }
             }
         }
@@ -100,5 +119,11 @@ namespace luval.excel.consolidator
             destinationCell.Formula = originalCell.Formula;
             destinationCell.FormulaR1C1 = originalCell.FormulaR1C1;
         }
+    }
+
+    public class ConsolidatorEventArgs : EventArgs
+    {
+        public string Message { get; set; }
+        public double Progress { get; set; }
     }
 }
