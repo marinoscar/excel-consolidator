@@ -45,7 +45,6 @@ namespace luval.excel.consolidator
                                     {
                                         for (int col = options.DataStartColumn; col <= options.DataEndColumn; col++)
                                         {
-                                            var original = excelSheet.Cells[excelRow, col];
                                             CopyCell(excelSheet.Cells[excelRow, col], consolidatedSheet.Cells[consolidatedRow, col]);
                                         }
                                         consolidatedRow++;
@@ -59,6 +58,7 @@ namespace luval.excel.consolidator
                                     }
                                 }
                                 var progress = Math.Round(((double)fileIdx / (double)fileNames.Length) * 100, 2);
+
                                 OnStatus(new ConsolidatorEventArgs()
                                 {
                                     Progress = progress,
@@ -67,8 +67,9 @@ namespace luval.excel.consolidator
                                 });
                             }
                         }
+                        consolidatedPackage.Save();
                     }
-                    consolidatedPackage.Save();
+                    //consolidatedPackage.Save();
                 }
             }
         }
@@ -95,11 +96,11 @@ namespace luval.excel.consolidator
         {
             destinationCell.Value = originalCell.Value;
 
-            destinationCell.AutoFilter = originalCell.AutoFilter;
-            destinationCell.Address = originalCell.Address;
-            destinationCell.Hyperlink = originalCell.Hyperlink;
-            destinationCell.Merge = originalCell.Merge;
-            destinationCell.StyleName = originalCell.StyleName;
+            //destinationCell.AutoFilter = originalCell.AutoFilter;
+            //destinationCell.Address = originalCell.Address;
+            //destinationCell.Hyperlink = originalCell.Hyperlink;
+            //destinationCell.Merge = originalCell.Merge;
+            //destinationCell.StyleName = originalCell.StyleName;
 
             destinationCell.Style.Border = originalCell.Style.Border;
             destinationCell.Style.Fill = originalCell.Style.Fill;
@@ -108,16 +109,20 @@ namespace luval.excel.consolidator
             destinationCell.Style.HorizontalAlignment = originalCell.Style.HorizontalAlignment;
             destinationCell.Style.Indent = originalCell.Style.Indent;
             destinationCell.Style.Numberformat = originalCell.Style.Numberformat;
-            destinationCell.Style.QuotePrefix = originalCell.Style.QuotePrefix;
-            destinationCell.Style.ReadingOrder = originalCell.Style.ReadingOrder;
-            destinationCell.Style.ShrinkToFit = originalCell.Style.ShrinkToFit;
+            
+
+            //destinationCell.Style.ShrinkToFit = originalCell.Style.ShrinkToFit;
+            //destinationCell.Style.QuotePrefix = originalCell.Style.QuotePrefix;
+            //destinationCell.Style.ReadingOrder = originalCell.Style.ReadingOrder;
+
             destinationCell.Style.TextRotation = originalCell.Style.TextRotation;
             destinationCell.Style.VerticalAlignment = originalCell.Style.VerticalAlignment;
-            destinationCell.Style.WrapText = originalCell.Style.WrapText;
-            destinationCell.Style.XfId = originalCell.Style.XfId;
 
-            destinationCell.Formula = originalCell.Formula;
-            destinationCell.FormulaR1C1 = originalCell.FormulaR1C1;
+            destinationCell.Style.WrapText = originalCell.Style.WrapText;
+            //destinationCell.Style.XfId = originalCell.Style.XfId;
+
+            //destinationCell.Formula = originalCell.Formula;
+            //destinationCell.FormulaR1C1 = originalCell.FormulaR1C1;
         }
     }
 

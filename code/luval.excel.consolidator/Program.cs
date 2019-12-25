@@ -15,12 +15,15 @@ namespace luval.excel.consolidator
         static void Main(string[] args)
         {
             var options = new Arguments(args);
+            var outputFile = new FileInfo(options.OutputFile);
+            if (outputFile.Exists) outputFile.Delete();
             var consolidator = new Consolidator();
             consolidator.Status += Consolidator_Status;
             var dirInfo = new DirectoryInfo(options.InputFolder);
             var files = dirInfo.GetFiles("*.xlsx", SearchOption.AllDirectories)
                 .Where(i => !i.Name.Equals(options.OutputFile)).ToArray();
             _log = new FileInfo(options.LogFile);
+            
             using (_stream = new StreamWriter(_log.FullName))
             {
                 try
@@ -30,13 +33,13 @@ namespace luval.excel.consolidator
                     Console.WriteLine();
                     Console.WriteLine("Starting the process with {0} files", files.Length);
                     Console.WriteLine();
-                    consolidator.Execute(options, new FileInfo(options.OutputFile), files);
+                    consolidator.Execute(options, outputFile, files);
                     Console.WriteLine();
                 }
                 catch(Exception ex)
                 {
                     LogMessage("** ERROR ** " + ex.ToString());
-                }
+                    }
             }
             Console.WriteLine();
             Console.WriteLine("Press any key to end...");
